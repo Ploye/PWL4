@@ -8,6 +8,11 @@ use App\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+use App\Admin;
+
 
 class RegisterController extends Controller
 {
@@ -39,6 +44,12 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+        $this->middleware('guest:admin');
+    }
+
+    public function showAdminRegisterForm()
+    {
+        return view('auth.register', ['url' => 'admin']);
     }
 
     /**
@@ -72,4 +83,20 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
         ]);
     }
+
+    protected function createAdmin(Request $req)
+{
+
+    $admin = new Admin;
+    $admin->username = $req->get('username');
+    $admin->name = $req->get('name');
+    $admin->email = $req->get('email');
+    $admin->password = Hash::make($req->get('password'));
+    $admin->save();
+        
+    if (Auth::guard('admin')->attempt(['username' => $req->username, 'password' => $req->password])) {
+        return redirect()->intended(route('admin.home'))->with('status', 'Selamat datang');
+    }
+}  
+
 }

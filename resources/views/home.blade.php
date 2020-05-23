@@ -14,10 +14,19 @@
                         </div>
                     @endif
 
-                    You are logged in!
+                    <!-- You are logged in! -->
+                    Hello,
+                     {{-- {{ $user->name }} --}}
+                    <br/>
+                    @if (Auth::guard('admin')->check())
+                        Anda login sebagai Admin
+                    @elseif (Auth::guard('web')->check())
+                        Anda login sebagai User
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 </div>
 @endsection
+
